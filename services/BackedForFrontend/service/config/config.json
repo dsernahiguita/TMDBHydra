@@ -1,0 +1,9 @@
+{
+  "logErrors": true,
+  "portRestAPI": "4060",
+  "databaseLogs": "TMDBHydra",
+  "databaseLogsCollection": "logs",
+  "databaseHost": "cluster0.w9ra6.mongodb.net",
+  "databaseUser": "TMDBHydra_db",
+  "databasePassword": "TMDBHydra_password"
+}

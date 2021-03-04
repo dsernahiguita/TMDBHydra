@@ -1,0 +1,12 @@
+*.dockerignore
+*.env
+*.git
+*.gitignore
+*.vs
+*.vscode
+*docker-compose*.yml
+*.md
+*venv*
+venv/
+hosts
+LICENSE
