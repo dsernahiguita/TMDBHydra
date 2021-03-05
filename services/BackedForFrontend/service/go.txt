@@ -1,3 +1,0 @@
-module github.com/TMDBHydra/BackedForFrontend
-
-go 1.14

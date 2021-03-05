@@ -13,8 +13,9 @@ import (
 )
 
 type Config struct {
-	LogErrors   bool   `json:"logErrors"`
-	PortRestAPI string `json:"portRestAPI"`
+	LogErrors          bool   `json:"logErrors"`
+	PortRestAPI        string `json:"portRestAPI"`
+	BackendServiceTMDB string `json:"backendServiceTMDB"`
 }
 
 /* Log errors: the errors will be save into the file errors_datetime */
@@ -22,6 +23,9 @@ var LogErrors bool
 
 /* Port rest api: port used by the rest API */
 var PortRestAPI string
+
+/* End point backend service The movie DB */
+var BackendServiceTMDB string
 
 /**
 * Read config file
@@ -43,4 +47,5 @@ func ReadConfigFile(configFile string) {
 	}
 	LogErrors = config.LogErrors
 	PortRestAPI = config.PortRestAPI
+	BackendServiceTMDB = config.BackendServiceTMDB
 }

@@ -5,5 +5,6 @@
   "databaseLogsCollection": "logs",
   "databaseHost": "cluster0.w9ra6.mongodb.net",
   "databaseUser": "TMDBHydra_db",
-  "databasePassword": "TMDBHydra_password"
+  "databasePassword": "TMDBHydra_password",
+  "backendServiceTMDB": "https://api.themoviedb.org/"
 }
