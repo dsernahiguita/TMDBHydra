@@ -36,6 +36,7 @@ const (
 	ErrorRequestParameterEmpty          /* 2: One of the parameters of the request is empty */
 	ErrorConfigFileNotFound             /* 3: Config file not found */
 	ErrorConfigFileUnreadable           /* 4: Config file not readable */
+	ErrorGetTVSerie                     /* 5: Error by trying to get the tvseries */
 )
 
 type LogRecord struct {
@@ -236,6 +237,8 @@ func (errorId ErrorId) getErrorIdDescription() string {
 		return "The config file is not founded"
 	case ErrorConfigFileUnreadable:
 		return "The config file is not readable"
+	case ErrorGetTVSerie:
+		return "Error by trying to get the tvseries"
 	default:
 		return "NoId"
 	}

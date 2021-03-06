@@ -13,7 +13,8 @@ import (
 )
 
 type bodyGetTVSerie struct {
-	Title string
+	Query string
+	Page  int
 }
 
 type bodyGetSeasonsEpisodes struct {
@@ -73,12 +74,12 @@ func delete(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
-* Get tv serie
+* Get tv series
 *
 * @param http.ResponseWriter w
 * @param http.Request r
  */
-func getTVSerie(w http.ResponseWriter, r *http.Request) {
+func getTVSeries(w http.ResponseWriter, r *http.Request) {
 	var p bodyGetTVSerie
 	/* Try to decode the request body into the struct. If there is an error,
 	respond to the client with the error message and a 400 status code.*/
@@ -88,16 +89,33 @@ func getTVSerie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	/* if one of the parameters in empty we should return error message 400 */
-	if len(p.Title) == 0 {
+	if len(p.Query) == 0 {
 		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
 		return
 	}
-	title := p.Title
+	query := p.Query
+	var page int
+	if p.Page == 0 {
+		page = 1
+	} else {
+		page = p.Page
+	}
 
+	results, err := GetTVSerie(query, page)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetTVSerie, Config.LogErrors)
+		return
+	}
+
+	/* send response {page, total_pages, total_results, results: [{id, name, origial_name, overview}]}*/
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	message := fmt.Sprintf("title %s", title)
-	w.Write([]byte(`{"message": "` + message + `", "title": "` + title + `"}`))
+	w.WriteHeader(http.StatusOK)
+	message, err := json.Marshal(results)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetTVSerie, Config.LogErrors)
+		return
+	}
+	w.Write([]byte(message))
 }
 
 /**
@@ -174,7 +192,7 @@ func Main() {
 	api.HandleFunc("", delete).Methods(http.MethodDelete)
 
 	/* Call service encrypt file */
-	api.HandleFunc("/tvserie", getTVSerie).Methods(http.MethodGet)
+	api.HandleFunc("/tvserie", getTVSeries).Methods(http.MethodGet)
 	api.HandleFunc("/seasons", getSeasonsEpisodes).Methods(http.MethodGet)
 	api.HandleFunc("/episode", getSummaryEpisode).Methods(http.MethodGet)
 

@@ -3,6 +3,7 @@
 * Read the config file config.json
 * @author  Diana Lucia Serna Higuita
  */
+
 package config
 
 import (
@@ -16,16 +17,20 @@ type Config struct {
 	LogErrors          bool   `json:"logErrors"`
 	PortRestAPI        string `json:"portRestAPI"`
 	BackendServiceTMDB string `json:"backendServiceTMDB"`
+	ApiKeyTMDB         string `json:"apiKeyTMDB"`
 }
 
-/* Log errors: the errors will be save into the file errors_datetime */
+/* Log errors: the errors will be save into the path logs */
 var LogErrors bool
 
-/* Port rest api: port used by the rest API */
+/* Port rest api: port where services can be accessed */
 var PortRestAPI string
 
 /* End point backend service The movie DB */
 var BackendServiceTMDB string
+
+/* End point backend service The movie DB */
+var ApiKeyTMDB string
 
 /**
 * Read config file
@@ -48,4 +53,5 @@ func ReadConfigFile(configFile string) {
 	LogErrors = config.LogErrors
 	PortRestAPI = config.PortRestAPI
 	BackendServiceTMDB = config.BackendServiceTMDB
+	ApiKeyTMDB = config.ApiKeyTMDB
 }

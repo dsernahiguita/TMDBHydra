@@ -6,5 +6,6 @@
   "databaseHost": "cluster0.w9ra6.mongodb.net",
   "databaseUser": "TMDBHydra_db",
   "databasePassword": "TMDBHydra_password",
-  "backendServiceTMDB": "https://api.themoviedb.org/"
+  "backendServiceTMDB": "https://api.themoviedb.org/3/",
+  "apiKeyTMDB": "02b4a085279d1263c4d3a06934313a1b"
 }
