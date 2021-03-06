@@ -6,7 +6,7 @@ are able to watchtv series (in the build-in backseat screens) during long journe
 ## POC:
 This POC shall simulate the user ui interaction and data flow via a command line tool.
 When the cli tool is started, the user is asked for a tv series title (free text),After the user enters a title and presses enter a list of matched series is shown.
-The user has to pick a series title from that result list. In the next step the user has choosefrom a season and an episode.
+The user has to pick a series title from that result list. In the next step the user has choose from a season and an episode.
 In the end the user gets displayed a title and a summary of the chosen episode.##
 
 ## Restrictions
