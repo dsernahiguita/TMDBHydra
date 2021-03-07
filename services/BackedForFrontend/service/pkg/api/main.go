@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 
 	Config "github.com/TMDBHydra/BackedForFrontend/pkg/config"
 	Errors "github.com/TMDBHydra/BackedForFrontend/pkg/errors"
@@ -202,5 +203,22 @@ func Main() {
 	api.HandleFunc("/tvserie", GetTVSeries).Methods(http.MethodGet)
 	api.HandleFunc("/seasons", GetSeasons).Methods(http.MethodGet)
 	api.HandleFunc("/episodes", GetEpisodes).Methods(http.MethodGet)
-	log.Fatal(http.ListenAndServe(":"+Config.PortRestAPI, r))
+
+	corsOpts := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, //you service is available and allowed for this base url
+		AllowedMethods: []string{
+			http.MethodGet, //http methods for your app
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+			http.MethodOptions,
+			http.MethodHead,
+		},
+		AllowedHeaders: []string{
+			"*",
+		},
+	})
+
+	log.Fatal(http.ListenAndServe(":"+Config.PortRestAPI, corsOpts.Handler(r)))
 }
