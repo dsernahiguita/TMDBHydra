@@ -1,0 +1,54 @@
+/*------------------------------------*\
+  #HOME
+\*------------------------------------*/
+
+.home-layout {
+  padding: 0 0rem;
+}
+
+.home-layout .title-layout {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  background-color: black;
+}
+
+.home-layout .title-layout .title {
+  text-align: right;
+  font-size: 3rem;
+  color: #00AABB;
+  width: 80%;
+}
+
+.home-layout .title-layout .subtitle {
+  text-align: right;
+  font-size: 2rem;
+  color: #472C68;
+  width: 80%;
+}
+
+.home-layout .body {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+
+}
+
+.home-layout .body .input-field {
+  padding: 1rem 0rem 1rem 0rem ;
+  flex: 0  100%;
+}
+
+.home-layout .body .button {
+  padding: 1rem 1rem 1rem 0rem ;
+}
+
+.tvseries-list {
+  padding: 1rem;
+}
+
+.episode {
+  padding: 2rem;
+}

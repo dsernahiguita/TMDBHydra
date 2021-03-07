@@ -1,0 +1,19 @@
+/*------------------------------------*\
+  #HEADER
+\*------------------------------------*/
+
+.header-layout {
+  height: 100%;
+  background-color: black;
+  padding: 0 1rem;
+}
+
+.header-layout .header {
+  height: 80px;
+  display: flex;
+  padding: 0rem 0em;
+}
+
+.header-layout .header .logo {
+  padding-top: 1rem;
+}

@@ -1,0 +1,32 @@
+
+{
+    "extends": "airbnb",
+
+    "rules": {
+      "no-undef": 0,                    // disallow use of undeclared variables unless mentioned in a /*global */ block
+      "no-undef-init": 0,               // disallow use of undefined when initializing variables
+      "no-undefined": 2,                // disallow use of undefined variable (off by default)
+      "react/prefer-stateless-function": [1],
+      "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+      "no-console": ["error", { "allow": ["error"] }],
+      "react/destructuring-assignment": ["enabled", "never"]
+    },
+
+    "globals": {
+      "window": true,
+      "document": true,
+      "expect": true,
+      "describe": true,
+      "it": true,
+      "navigator": true,
+      "FormData": true,
+      "jasmine": true,
+      "Image": true,
+      "Blob": true,
+      "FileReader": true,
+      "localStorage": true,
+      "atob": true,
+      "btoa": true,
+      "jest": true
+    }
+}
