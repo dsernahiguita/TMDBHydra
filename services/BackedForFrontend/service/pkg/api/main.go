@@ -7,7 +7,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -89,7 +88,7 @@ func delete(w http.ResponseWriter, r *http.Request) {
 * @param http.ResponseWriter w
 * @param http.Request r
  */
-func getTVSeries(w http.ResponseWriter, r *http.Request) {
+func GetTVSeries(w http.ResponseWriter, r *http.Request) {
 	var p bodyGetTVSerie
 	/* Try to decode the request body into the struct. If there is an error,
 	respond to the client with the error message and a 400 status code.*/
@@ -111,7 +110,7 @@ func getTVSeries(w http.ResponseWriter, r *http.Request) {
 		page = p.Page
 	}
 
-	results, err := GetTVSeries(query, page)
+	results, err := TMDBGetTVSeries(query, page)
 	if err != nil {
 		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetTVSerie, Config.LogErrors)
 		return
@@ -134,7 +133,7 @@ func getTVSeries(w http.ResponseWriter, r *http.Request) {
 * @param http.ResponseWriter w
 * @param http.Request r
  */
-func getSeasons(w http.ResponseWriter, r *http.Request) {
+func GetSeasons(w http.ResponseWriter, r *http.Request) {
 	var p bodyGetSeasons
 	/* Try to decode the request body into the struct. If there is an error,
 	respond to the client with the error message and a 400 status code.*/
@@ -150,7 +149,7 @@ func getSeasons(w http.ResponseWriter, r *http.Request) {
 	}
 	tvSerieId := p.TVSerieId
 
-	results, err := GetSeasons(tvSerieId)
+	results, err := TMDBGetSeasons(tvSerieId)
 	if err != nil {
 		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetSeasons, Config.LogErrors)
 		return
@@ -173,7 +172,7 @@ func getSeasons(w http.ResponseWriter, r *http.Request) {
 * @param http.ResponseWriter w
 * @param http.Request r
  */
-func getEpisodes(w http.ResponseWriter, r *http.Request) {
+func GetEpisodes(w http.ResponseWriter, r *http.Request) {
 	var p bodyGetEpisodes
 	/* Try to decode the request body into the struct. If there is an error,
 	respond to the client with the error message and a 400 status code.*/
@@ -190,7 +189,7 @@ func getEpisodes(w http.ResponseWriter, r *http.Request) {
 	tvSerieId := p.TVSerieId
 	season := p.Season
 
-	results, err := GetEpisodes(tvSerieId, season)
+	results, err := TMDBGetEpisodes(tvSerieId, season)
 	if err != nil {
 		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetEpisodes, Config.LogErrors)
 		return
@@ -208,40 +207,13 @@ func getEpisodes(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
-* Get summary episode
-*
-* @param http.ResponseWriter w
-* @param http.Request r
- */
-func getSummaryEpisode(w http.ResponseWriter, r *http.Request) {
-	var p bodyGetSummaryEpisode
-	/* Try to decode the request body into the struct. If there is an error,
-	respond to the client with the error message and a 400 status code.*/
-	err := json.NewDecoder(r.Body).Decode(&p)
-	if err != nil {
-		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorRequestBodyBadlyFormed, Config.LogErrors)
-		return
-	}
-	/* if one of the parameters in empty we should return error message 400 */
-	if len(p.Episode) == 0 {
-		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
-		return
-	}
-	episode := p.Episode
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	message := fmt.Sprintf("Episode %s ", episode)
-	w.Write([]byte(`{"message": "` + message + `", "episode": "` + episode + `"}`))
-}
-
-/**
 * API
 * Here are implemented a request router and dispatcher for matching incoming request
-* that includes the format /storeDataset
+* that includes the format /api/frontend
 * Handler implemented:
-* POST /storeDataset/rx store a RX file into IPFS
-* POST /storeDataset/ct store serveral CT files into IPFS
+* Get tvserie
+* Get seasons (of a tv serie)
+* Get episodes (of a season)
 * The port used by the rest API is defined into the config.json file
  */
 func Main() {
@@ -253,10 +225,8 @@ func Main() {
 	api.HandleFunc("", delete).Methods(http.MethodDelete)
 
 	/* Call service encrypt file */
-	api.HandleFunc("/tvserie", getTVSeries).Methods(http.MethodGet)
-	api.HandleFunc("/seasons", getSeasons).Methods(http.MethodGet)
-	api.HandleFunc("/episodes", getEpisodes).Methods(http.MethodGet)
-	api.HandleFunc("/episode", getSummaryEpisode).Methods(http.MethodGet)
-
+	api.HandleFunc("/tvserie", GetTVSeries).Methods(http.MethodGet)
+	api.HandleFunc("/seasons", GetSeasons).Methods(http.MethodGet)
+	api.HandleFunc("/episodes", GetEpisodes).Methods(http.MethodGet)
 	log.Fatal(http.ListenAndServe(":"+Config.PortRestAPI, r))
 }

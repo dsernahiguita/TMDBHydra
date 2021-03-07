@@ -65,7 +65,7 @@ type EpisodesSeason struct {
 * @return TVSeries tvSeries
 * @return error err
  */
-func GetTVSeries(query string, page int) (TVSeries, error) {
+func TMDBGetTVSeries(query string, page int) (TVSeries, error) {
 	var tvSeries TVSeries
 	endPoint := "search/tv"
 
@@ -113,7 +113,7 @@ func GetTVSeries(query string, page int) (TVSeries, error) {
 * @return object TVSerieSeasons: this object has the field seasons
 * @return error err
  */
-func GetSeasons(tvSerieId int) (TVSerieSeasons, error) {
+func TMDBGetSeasons(tvSerieId int) (TVSerieSeasons, error) {
 	var tvSerieSeasons TVSerieSeasons
 	endPoint := "tv/" + strconv.Itoa(tvSerieId)
 
@@ -159,7 +159,7 @@ func GetSeasons(tvSerieId int) (TVSerieSeasons, error) {
 * @return object EpisodesSeason: this object has the field episodes
 * @return error err
  */
-func GetEpisodes(tvSerieId int, season int) (EpisodesSeason, error) {
+func TMDBGetEpisodes(tvSerieId int, season int) (EpisodesSeason, error) {
 	var episodesSeason EpisodesSeason
 	endPoint := "tv/" + strconv.Itoa(tvSerieId) + "/season/" + strconv.Itoa(season)
 

@@ -21,4 +21,5 @@ func TestConfig(t *testing.T) {
 	if LogErrors != false && LogErrors != true {
 		t.Errorf("Error the config json with the variable LogErrors")
 	}
+
 }

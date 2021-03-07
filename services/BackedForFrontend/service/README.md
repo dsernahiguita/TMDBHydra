@@ -2,11 +2,12 @@
 Rest API server to implement the following services:
 * Get TV series
 * Get seasons
-* Get Episode
-
+* Get Episodes
+This API consumes the The Movie Database API
 
 ## Installation
 ### Requirements
+* Go
 * Config file "config.json": this file must be located in the same folder where
 the application was installed, path: config/config.json.
 This file allow to set the following options
@@ -21,17 +22,39 @@ This file allow to set the following options
   * backendServiceTMDB: backend service The move DB provider for tv informations
   * apiKeyTMDB
 
-### Installation Manual
+### Run Manual
+* Go to the path TMDBHydra/services/BackedForFrontend/service
+* Run
+```
+Go run main.go
+```
+This service is available in the port defined into the config file, by default
+4060
 
 ### Installation using dockers
-
 * Run the Dockerfile
 ```
 docker build ./
 ```
 * Start the container
 ```
+docker run -i -t -p 4060:4060 <imageID>
+```
 
+## Unit tests
+### Run unit test for package without dependencies
+* Go to the path TMDBHydra/services/BackedForFrontend/service/pkg/errors
+* Run
+```
+go test -v
+```
+
+### Run unit test for package with dependencies
+The packages Api and Config are tested here
+* Go to the path TMDBHydra/services/BackedForFrontend/service
+* Run
+```
+go test -v
 ```
 
 ## Usage
@@ -113,10 +136,21 @@ Body:
 Response:
 ```
 {
-
+  "id": 3751,
+  "name": "Season 1",
+  "overview": "Modern Family takes a refreshing and funny view of what it means to raise a family in this hectic day and age.  Multi-cultural relationships, adoption, and same-sex marriage are just a few of the timely issues faced by the show’s three wildly-diverse broods.  No matter the size or shape, family always comes first in this hilariously “modern” look at life, love, and laughter.",
+  "season_number": 1,
+  "episodes": [
+    {
+        "id": 64965,
+        "name": "Pilot",
+        "overview": "Jay has just recently married his younger, Colombian wife, Gloria, but he's having trouble keeping up with her and her son Manny. Claire is having trouble with her own family, especially with her husband Phil, who thinks he can be hip with his three kids. Also, Mitchell and his partner Cameron adopt a Vietnamese baby, Lily.",
+        "episode_number": 1
+    },
+    ...
+  ]
 }
 ```
-
 
 ## Error handling:
 The application errors are classified:
@@ -135,14 +169,15 @@ The application errors are classified:
   ```
 * Warning: the application will not stop and the warnings will be stored in Mongo DB
 
-
 ### Response errors
 * Code 1: Error, Please check the body of your post request, it is badly formed
 * Code 2: Error, Please check the body of your post request, one or more of the parameters
 are empty
 * Code 3: Error, Error the config file is not founded
 * Code 4: Error, Error the config file is not readable
-
+* Code 5: Error, Error by trying to get the tvseries
+* Code 6: Error, Error by trying to get the tvserie's seasons
+* Code 7: Error, Error by trying to get the season's episodes
 
 ### Logs
 ## License
