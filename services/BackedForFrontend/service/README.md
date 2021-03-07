@@ -62,12 +62,7 @@ go test -v
 * Get tv series
 Note: the parameter page is optional, by default the page 1 is returned
 ```
-GET localhost:4060/api/frontend/tvserie
-Body:
-{
-  "query": "Modern Family",
-  "page": 1
-}
+GET localhost:4060/api/frontend/tvserie?query="Modern Family"&page=1
 ```
 Response:
 ```
@@ -94,11 +89,7 @@ Response:
 
 * Get seasons
 ```
-GET localhost:4060/api/frontend/seasons
-Body:
-{
-  "tvserieId": 1421
-}
+GET localhost:4060/api/frontend/seasons?tvSerieId=1421
 ```
 Response:
 ```
@@ -126,12 +117,7 @@ Response:
 
 * Get episodes:
 ```
-POST localhost:4060/api/frontend/episodes
-Body:
-{
-  "tvserieId": 1421
-  "season": 1
-}
+POST localhost:4060/api/frontend/episodes?tvSerieId=1421&season=1
 ```
 Response:
 ```
@@ -178,6 +164,9 @@ are empty
 * Code 5: Error, Error by trying to get the tvseries
 * Code 6: Error, Error by trying to get the tvserie's seasons
 * Code 7: Error, Error by trying to get the season's episodes
+
+The error codes 1 and 2 return the status code http.StatusBadRequest (400), all
+other errors return http.StatusInternalServerError (500)
 
 ### Logs
 ## License

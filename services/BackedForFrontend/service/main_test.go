@@ -6,8 +6,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -44,14 +42,7 @@ func TestConfig(t *testing.T) {
 * The request must have the parameter "query" in the body
  */
 func TestGetTVSeriesGoodRequest(t *testing.T) {
-	requestBody, err := json.Marshal(map[string]string{
-		"query": "modern family",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	request, err := http.NewRequest("GET", "/api/frontend/tvserie", bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest("GET", "/api/frontend/tvserie?query=Modern", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,14 +62,7 @@ func TestGetTVSeriesGoodRequest(t *testing.T) {
 * error status StatusBadRequest must be returned
  */
 func TestGetTVSeriesBadRequest(t *testing.T) {
-	requestBody, err := json.Marshal(map[string]string{
-		"query1": "modern family",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	request, err := http.NewRequest("GET", "/api/frontend/tvserie", bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest("GET", "/api/frontend/tvserie?query1=Modern", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -98,14 +82,7 @@ func TestGetTVSeriesBadRequest(t *testing.T) {
 * The request must have the parameter "tvSerieId" in the body
  */
 func TestGetSeasonsGoodRequest(t *testing.T) {
-	requestBody, err := json.Marshal(map[string]int{
-		"tvSerieId": 1421,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	request, err := http.NewRequest("GET", "/api/frontend/seasons", bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest("GET", "/api/frontend/seasons?tvSerieId=1421", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,14 +102,7 @@ func TestGetSeasonsGoodRequest(t *testing.T) {
 * error status StatusBadRequest must be returned
  */
 func TestGetSeasonsBadRequest(t *testing.T) {
-	requestBody, err := json.Marshal(map[string]int{
-		"tvSerieIdTT": 1421,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	request, err := http.NewRequest("GET", "/api/frontend/seasons", bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest("GET", "/api/frontend/seasons?tvSerieId1=1421", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -154,15 +124,7 @@ func TestGetSeasonsBadRequest(t *testing.T) {
 * The request must have the parameter "tvSerieId" and "season" in the body
  */
 func TestGetEpisodesGoodRequest(t *testing.T) {
-	requestBody, err := json.Marshal(map[string]int{
-		"tvSerieId": 1421,
-		"season":    1,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	request, err := http.NewRequest("GET", "/api/frontend/episodes", bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest("GET", "/api/frontend/episodes?tvSerieId=1421&season=1", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -182,14 +144,7 @@ func TestGetEpisodesGoodRequest(t *testing.T) {
 * error status StatusBadRequest must be returned
  */
 func TestGetEpisodesBadRequest(t *testing.T) {
-	requestBody, err := json.Marshal(map[string]int{
-		"tvSerieId": 1421,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	request, err := http.NewRequest("GET", "/api/frontend/episodes", bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest("GET", "/api/frontend/episodes?tvSerieId1=1421", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

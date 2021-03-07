@@ -9,30 +9,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 
 	Config "github.com/TMDBHydra/BackedForFrontend/pkg/config"
 	Errors "github.com/TMDBHydra/BackedForFrontend/pkg/errors"
 )
-
-type bodyGetTVSerie struct {
-	Query string
-	Page  int
-}
-
-type bodyGetSeasons struct {
-	TVSerieId int
-}
-
-type bodyGetEpisodes struct {
-	TVSerieId int
-	Season    int
-}
-
-type bodyGetSummaryEpisode struct {
-	Episode string
-}
 
 /**
 * Get
@@ -89,25 +72,20 @@ func delete(w http.ResponseWriter, r *http.Request) {
 * @param http.Request r
  */
 func GetTVSeries(w http.ResponseWriter, r *http.Request) {
-	var p bodyGetTVSerie
-	/* Try to decode the request body into the struct. If there is an error,
-	respond to the client with the error message and a 400 status code.*/
-	err := json.NewDecoder(r.Body).Decode(&p)
-	if err != nil {
-		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorRequestBodyBadlyFormed, Config.LogErrors)
-		return
-	}
+	/* query and page*/
+	parameters := r.URL.Query()
+
 	/* if one of the parameters in empty we should return error message 400 */
-	if len(p.Query) == 0 {
+	if len(parameters.Get("query")) == 0 {
 		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
 		return
 	}
-	query := p.Query
-	var page int
-	if p.Page == 0 {
+	query := parameters.Get("query")
+
+	/* if the parameter page is empty or not number we should use by default 1 */
+	page, err := strconv.Atoi(parameters.Get("page"))
+	if err != nil {
 		page = 1
-	} else {
-		page = p.Page
 	}
 
 	results, err := TMDBGetTVSeries(query, page)
@@ -134,20 +112,15 @@ func GetTVSeries(w http.ResponseWriter, r *http.Request) {
 * @param http.Request r
  */
 func GetSeasons(w http.ResponseWriter, r *http.Request) {
-	var p bodyGetSeasons
-	/* Try to decode the request body into the struct. If there is an error,
-	respond to the client with the error message and a 400 status code.*/
-	err := json.NewDecoder(r.Body).Decode(&p)
+	/* tvSerieId */
+	parameters := r.URL.Query()
+
+	/* if the parameter tvSerieId is empty we should return an error */
+	tvSerieId, err := strconv.Atoi(parameters.Get("tvSerieId"))
 	if err != nil {
-		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorRequestBodyBadlyFormed, Config.LogErrors)
-		return
-	}
-	/* if one of the parameters in empty we should return error message 400 */
-	if p.TVSerieId == 0 {
 		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
 		return
 	}
-	tvSerieId := p.TVSerieId
 
 	results, err := TMDBGetSeasons(tvSerieId)
 	if err != nil {
@@ -173,21 +146,22 @@ func GetSeasons(w http.ResponseWriter, r *http.Request) {
 * @param http.Request r
  */
 func GetEpisodes(w http.ResponseWriter, r *http.Request) {
-	var p bodyGetEpisodes
-	/* Try to decode the request body into the struct. If there is an error,
-	respond to the client with the error message and a 400 status code.*/
-	err := json.NewDecoder(r.Body).Decode(&p)
+	/* tvSerieId and season */
+	parameters := r.URL.Query()
+
+	/* if the parameter tvSerieId is empty we should return an error */
+	tvSerieId, err := strconv.Atoi(parameters.Get("tvSerieId"))
 	if err != nil {
-		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorRequestBodyBadlyFormed, Config.LogErrors)
-		return
-	}
-	/* if one of the parameters in empty we should return error message 400 */
-	if p.TVSerieId == 0 || p.Season == 0 {
 		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
 		return
 	}
-	tvSerieId := p.TVSerieId
-	season := p.Season
+
+	/* if the parameter season is empty we should return an error */
+	season, err := strconv.Atoi(parameters.Get("season"))
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
+		return
+	}
 
 	results, err := TMDBGetEpisodes(tvSerieId, season)
 	if err != nil {
