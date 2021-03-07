@@ -26,6 +26,21 @@ Component architecture
 
 ## Installation
 ### Requirements
+Docker
+
+1. Clone project
+```
+git clone git@github.com:dsernahiguita/TMDBHydra.git
+```
+2. Go to the path TMDBHydra/scripts/
+3. Run
+```
+docker-compose build
+```
+4. Run
+```
+docker-compose up
+```
 
 
 ### Logs

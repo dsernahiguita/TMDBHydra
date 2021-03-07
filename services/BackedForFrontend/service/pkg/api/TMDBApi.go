@@ -22,7 +22,7 @@ type ResultsTVSeries struct {
 	Overview     string `json:"overview"`
 }
 
-type BodyGetTVSeries struct {
+type TVSeries struct {
 	Page         int               `json:"page"`
 	TotalPages   int               `json:"total_pages"`
 	TotalResults int               `json:"total_results"`
@@ -36,7 +36,7 @@ type Season struct {
 	SeasonNumber int    `json:"season_number"`
 }
 
-type BodyGetTVSerieDetails struct {
+type TVSerieSeasons struct {
 	Name             string   `json:"name"`
 	NumberOfSeasons  int      `json:"number_of_seasons"`
 	NumberOfEpisodes int      `json:"number_of_episodes"`
@@ -62,11 +62,11 @@ type EpisodesSeason struct {
 * Get tv series
 * @param string query
 * @param int page
-* @return BodyGetTVSeries tvSeries
+* @return TVSeries tvSeries
 * @return error err
  */
-func GetTVSeries(query string, page int) (BodyGetTVSeries, error) {
-	var tvSeries BodyGetTVSeries
+func GetTVSeries(query string, page int) (TVSeries, error) {
+	var tvSeries TVSeries
 	endPoint := "search/tv"
 
 	request, err := http.NewRequest("GET", Config.BackendServiceTMDB+endPoint, nil)
@@ -110,16 +110,16 @@ func GetTVSeries(query string, page int) (BodyGetTVSeries, error) {
 /**
 * Get Seasons
 * @param int tvSerieId
-* @return object tvSerieDetails: this object has the field seasons
+* @return object TVSerieSeasons: this object has the field seasons
 * @return error err
  */
-func GetSeasons(tvSerieId int) (BodyGetTVSerieDetails, error) {
-	var tvSerieDetails BodyGetTVSerieDetails
+func GetSeasons(tvSerieId int) (TVSerieSeasons, error) {
+	var tvSerieSeasons TVSerieSeasons
 	endPoint := "tv/" + strconv.Itoa(tvSerieId)
 
 	request, err := http.NewRequest("GET", Config.BackendServiceTMDB+endPoint, nil)
 	if err != nil {
-		return tvSerieDetails, err
+		return tvSerieSeasons, err
 	}
 	/* add the query parameters */
 	q := request.URL.Query()
@@ -130,26 +130,26 @@ func GetSeasons(tvSerieId int) (BodyGetTVSerieDetails, error) {
 	/* do call */
 	response, err := http.Get(request.URL.String())
 	if err != nil {
-		return tvSerieDetails, err
+		return tvSerieSeasons, err
 	}
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return tvSerieDetails, err
+		return tvSerieSeasons, err
 	}
 
 	if response.StatusCode == 200 {
-		err = json.Unmarshal(body, &tvSerieDetails)
+		err = json.Unmarshal(body, &tvSerieSeasons)
 		if err != nil {
-			return tvSerieDetails, err
+			return tvSerieSeasons, err
 		}
 
-		return tvSerieDetails, nil
+		return tvSerieSeasons, nil
 	}
 
 	bodyString := string(body)
 	err = errors.New(bodyString)
-	return tvSerieDetails, err
+	return tvSerieSeasons, err
 }
 
 /**

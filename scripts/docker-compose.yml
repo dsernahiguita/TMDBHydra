@@ -1,0 +1,18 @@
+version: "3"
+services:
+  hydra-backend:
+    build:
+          context: ../services/BackedForFrontend
+          dockerfile: Dockerfile
+    container_name: hydra-backend
+    expose:
+      - "4060"
+    ports:
+      - "4060:4060"
+    #depends_on:
+    networks:
+      - tmdbhydra-network
+
+networks:
+  tmdbhydra-network:
+    driver: bridge
