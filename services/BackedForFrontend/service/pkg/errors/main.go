@@ -37,6 +37,8 @@ const (
 	ErrorConfigFileNotFound             /* 3: Config file not found */
 	ErrorConfigFileUnreadable           /* 4: Config file not readable */
 	ErrorGetTVSerie                     /* 5: Error by trying to get the tvseries */
+	ErrorGetSeasons                     /* 6: Error by trying to get the tvserie's seasons */
+	ErrorGetEpisodes                    /* 7: Error by trying to get the season's episodes */
 )
 
 type LogRecord struct {
@@ -166,7 +168,6 @@ func (errorType ErrorType) Log(error string, errorId ErrorId) bool {
 	}
 	nameFile := folder + "/log_" + fmt.Sprintf("%d%02d%02d", currentTime.Year(), currentTime.Month(), currentTime.Day())
 
-	/* open create the file LocalStorageSensorFile */
 	f, err := os.OpenFile(nameFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Println(err)
@@ -250,6 +251,10 @@ func (errorId ErrorId) getErrorIdDescription() string {
 		return "The config file is not readable"
 	case ErrorGetTVSerie:
 		return "Error by trying to get the tvseries"
+	case ErrorGetSeasons:
+		return "Error by trying to get the tvserie's seasons"
+	case ErrorGetEpisodes:
+		return "Error by trying to get the season's episodes"
 	default:
 		return "NoId"
 	}

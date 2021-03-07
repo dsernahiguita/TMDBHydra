@@ -26,6 +26,11 @@ type bodyGetSeasons struct {
 	TVSerieId int
 }
 
+type bodyGetEpisodes struct {
+	TVSerieId int
+	Season    int
+}
+
 type bodyGetSummaryEpisode struct {
 	Episode string
 }
@@ -147,17 +152,56 @@ func getSeasons(w http.ResponseWriter, r *http.Request) {
 
 	results, err := GetSeasons(tvSerieId)
 	if err != nil {
-		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetTVSerie, Config.LogErrors)
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetSeasons, Config.LogErrors)
 		return
 	}
 
-	fmt.Println(results)
-	/* send response {page, total_pages, total_results, results: [{id, name, origial_name, overview}]}*/
+	/* send response {name, number_of_seasons, number_of_episodes, seasons: [{id, name, overview, season_number}]}*/
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	message, err := json.Marshal(results)
 	if err != nil {
-		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetTVSerie, Config.LogErrors)
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetSeasons, Config.LogErrors)
+		return
+	}
+	w.Write([]byte(message))
+}
+
+/**
+* Get episodes
+*
+* @param http.ResponseWriter w
+* @param http.Request r
+ */
+func getEpisodes(w http.ResponseWriter, r *http.Request) {
+	var p bodyGetEpisodes
+	/* Try to decode the request body into the struct. If there is an error,
+	respond to the client with the error message and a 400 status code.*/
+	err := json.NewDecoder(r.Body).Decode(&p)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorRequestBodyBadlyFormed, Config.LogErrors)
+		return
+	}
+	/* if one of the parameters in empty we should return error message 400 */
+	if p.TVSerieId == 0 || p.Season == 0 {
+		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
+		return
+	}
+	tvSerieId := p.TVSerieId
+	season := p.Season
+
+	results, err := GetEpisodes(tvSerieId, season)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetEpisodes, Config.LogErrors)
+		return
+	}
+
+	/* send response {id, name, overview, season_number, episodes: [{id, name, overview, episode_number}]} */
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	message, err := json.Marshal(results)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetEpisodes, Config.LogErrors)
 		return
 	}
 	w.Write([]byte(message))
@@ -211,6 +255,7 @@ func Main() {
 	/* Call service encrypt file */
 	api.HandleFunc("/tvserie", getTVSeries).Methods(http.MethodGet)
 	api.HandleFunc("/seasons", getSeasons).Methods(http.MethodGet)
+	api.HandleFunc("/episodes", getEpisodes).Methods(http.MethodGet)
 	api.HandleFunc("/episode", getSummaryEpisode).Methods(http.MethodGet)
 
 	log.Fatal(http.ListenAndServe(":"+Config.PortRestAPI, r))

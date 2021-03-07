@@ -43,6 +43,21 @@ type BodyGetTVSerieDetails struct {
 	Seasons          []Season `json:"seasons"`
 }
 
+type Episode struct {
+	Id            int    `json:"id"`
+	Name          string `json:"name"`
+	Overview      string `json:"overview"`
+	EpisodeNumber int    `json:"episode_number"`
+}
+
+type EpisodesSeason struct {
+	Id           int       `json:"id"`
+	Name         string    `json:"name"`
+	Overview     string    `json:"overview"`
+	SeasonNumber int       `json:"season_number"`
+	Episodes     []Episode `json:"episodes"`
+}
+
 /**
 * Get tv series
 * @param string query
@@ -135,4 +150,50 @@ func GetSeasons(tvSerieId int) (BodyGetTVSerieDetails, error) {
 	bodyString := string(body)
 	err = errors.New(bodyString)
 	return tvSerieDetails, err
+}
+
+/**
+* Get episodes
+* @param int tvSerieId
+* @param int season
+* @return object EpisodesSeason: this object has the field episodes
+* @return error err
+ */
+func GetEpisodes(tvSerieId int, season int) (EpisodesSeason, error) {
+	var episodesSeason EpisodesSeason
+	endPoint := "tv/" + strconv.Itoa(tvSerieId) + "/season/" + strconv.Itoa(season)
+
+	request, err := http.NewRequest("GET", Config.BackendServiceTMDB+endPoint, nil)
+	if err != nil {
+		return episodesSeason, err
+	}
+	/* add the query parameters */
+	q := request.URL.Query()
+	q.Add("api_key", Config.ApiKeyTMDB)
+	q.Add("language", "en-US")
+	request.URL.RawQuery = q.Encode()
+
+	/* do call */
+	response, err := http.Get(request.URL.String())
+	if err != nil {
+		return episodesSeason, err
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return episodesSeason, err
+	}
+
+	if response.StatusCode == 200 {
+		err = json.Unmarshal(body, &episodesSeason)
+		if err != nil {
+			return episodesSeason, err
+		}
+
+		return episodesSeason, nil
+	}
+
+	bodyString := string(body)
+	err = errors.New(bodyString)
+	return episodesSeason, err
 }
