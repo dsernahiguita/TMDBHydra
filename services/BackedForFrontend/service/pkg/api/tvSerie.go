@@ -1,9 +1,13 @@
+/**
+* TV Serie
+* @author  Diana Lucia Serna Higuita
+ */
+
 package api
 
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -91,7 +95,7 @@ func GetTVSeries(query string, page int) (BodyGetTVSeries, error) {
 /**
 * Get Seasons
 * @param int tvSerieId
-* @return array seasons
+* @return object tvSerieDetails: this object has the field seasons
 * @return error err
  */
 func GetSeasons(tvSerieId int) (BodyGetTVSerieDetails, error) {
@@ -121,7 +125,6 @@ func GetSeasons(tvSerieId int) (BodyGetTVSerieDetails, error) {
 
 	if response.StatusCode == 200 {
 		err = json.Unmarshal(body, &tvSerieDetails)
-		fmt.Println(tvSerieDetails)
 		if err != nil {
 			return tvSerieDetails, err
 		}

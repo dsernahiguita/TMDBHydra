@@ -1,7 +1,7 @@
 # Backend for frontend service
 Rest API server to implement the following services:
 * Get TV series
-* Get seasons episodes
+* Get seasons
 * Get Episode
 
 
@@ -10,10 +10,16 @@ Rest API server to implement the following services:
 * Config file "config.json": this file must be located in the same folder where
 the application was installed, path: config/config.json.
 This file allow to set the following options
-  * logError boolean: the logs will be stored in the mongo DB
+  * logErrors boolean: the logs will be stored in the mongo DB and in txt files
+  located into the path logs/
   * portRestAPI: port exposed used by the endpoints
-  * databaseLogs: logs database
-  * databaseLogsCollection: collection from the database where the errors will be stored
+  * databaseLogs: Mongo DB where the errors logs are stored
+  * databaseLogsCollection: collection from the database where the errors are stored
+  * databaseHost
+  * databaseUser
+  * databasePassword
+  * backendServiceTMDB: backend service The move DB provider for tv informations
+  * apiKeyTMDB
 
 ### Installation Manual
 
@@ -25,58 +31,89 @@ docker build ./
 ```
 * Start the container
 ```
-docker run -i -t -p 4042:4042 -v /my/local/path:/app/locaStorage
--v /my/local/path/keys:/app/vivamedKeys <imageID>
-```
 
+```
 
 ## Usage
 ### API Endpoints
-* Get tv serie
+* Get tv series
+Note: the parameter page is optional, by default the page 1 is returned
 ```
 GET localhost:4060/api/frontend/tvserie
 Body:
 {
-  "title": "TEST"
+  "query": "Modern Family",
+  "page": 1
 }
 ```
 Response:
 ```
 {
-    "message": ""
-    "title": ""
+  "page": 1,
+  "total_pages": 1,
+  "total_results": 2,
+  "results": [
+    {
+      "id": 1421,
+      "name": "Modern Family",
+      "original_name": "Modern Family",
+      "overview": "The Pritchett-Dunphy-Tucker clan is a wonderfully large and blended family. They give us an honest and often hilarious look into the sometimes warm, sometimes twisted, embrace of the modern family."
+    },
+    {
+        "id": 30509,
+        "name": "The Madness of Modern Families",
+        "original_name": "The Madness of Modern Families",
+        "overview": "Light-hearted look at the absurd behaviour displayed by British parents desperate to get it right for their offspring."
+    }
+  ]
 }
 ```
 
-* Get seasons episodes
+* Get seasons
 ```
 GET localhost:4060/api/frontend/seasons
 Body:
 {
-  "tvserie": ""
+  "tvserieId": 1421
 }
 ```
 Response:
 ```
 {
-    "message": ""
-    "tvserie": ""
+  "name": "Modern Family",
+  "number_of_seasons": 11,
+  "number_of_episodes": 250,
+  "seasons": [
+    {
+      "id": 147409,
+      "name": "Specials",
+      "overview": "",
+      "season_number": 0
+    },
+    {
+       "id": 3751,
+       "name": "Season 1",
+       "overview": "Modern Family takes a refreshing and funny view of what it means to raise a family in this hectic day and age.  Multi-cultural relationships, adoption, and same-sex marriage are just a few of the timely issues faced by the show’s three wildly-diverse broods.  No matter the size or shape, family always comes first in this hilariously “modern” look at life, love, and laughter.",
+       "season_number": 1
+   },
+   ....
+  ]
 }
 ```
 
-* Get episode:
+* Get episodes:
 ```
-POST localhost:4060/api/frontend/episode
+POST localhost:4060/api/frontend/episodes
 Body:
 {
-  "episode": ""
+  "tvserieId": 1421
+  "season": 1
 }
 ```
 Response:
 ```
 {
-    "message": ""
-    "episode": ""
+
 }
 ```
 

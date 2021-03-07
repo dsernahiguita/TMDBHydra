@@ -68,6 +68,10 @@ var DatabaseHost string
 var DatabaseUser string
 var DatabasePassword string
 
+/**
+* Load database credentials
+* @return bool
+ */
 func LoadDatabaseCredentials() bool {
 	/* Read config file to get the credential of the logs database */
 	jsonFile, err := ioutil.ReadFile("config/config.json")
@@ -180,6 +184,13 @@ func (errorType ErrorType) Log(error string, errorId ErrorId) bool {
 	return true
 }
 
+/**
+* Save log DB
+* @param errorType ErrorType
+* @param string error
+* @param ErrorId errorId
+* @param bool
+ */
 func (errorType ErrorType) saveLogDB(error string, errorId ErrorId) bool {
 	/* set client options */
 	mongoDBServerConnection := fmt.Sprintf(
