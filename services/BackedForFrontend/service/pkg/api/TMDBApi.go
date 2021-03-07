@@ -1,5 +1,5 @@
 /**
-* TV Serie
+* TMDB api
 * @author  Diana Lucia Serna Higuita
  */
 

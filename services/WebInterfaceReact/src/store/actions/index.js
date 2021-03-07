@@ -12,7 +12,15 @@ import {
 * @param int page
 */
 export const getTVSeries = (query, page) => async (dispatch) => {
-  const tvSeries = await tmdbHydraClient.getTVSeries(query, page);
+  let tvSeries = {
+    page: -1,
+    totalPages: -1,
+    totalResults: -1,
+    tvSeries: [],
+  }
+  if (query) {
+    tvSeries = await tmdbHydraClient.getTVSeries(query, page);
+  }
 
   dispatch({
     type: GET_TVSERIES,

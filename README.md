@@ -16,13 +16,44 @@ In the end the user gets displayed a title and a summary of the chosen episode.#
 * Please provide us the source code as a public accessible git repo (github, gitlab,...)
 
 ## Architecture
-Component architecture
+
+-------------------------------------
+|                                    |
+|       WEB Interface React          |
+|                                    |  
+-------------------------------------
+
+--------------------------------------
+|                                    |
+|      BackedForFrontend Api         |
+|                                    |   
+--------------------------------------
+
+-------------------------------------
+|                                    |
+|               TMDB Api             |
+|                                    |  
+-------------------------------------
 
 
 ## Services
-### HydraBackedForFrontend
+### Backed for frontend:
+located: services/BackedForFrontend
+After the Installation this service is available under the Port: 4060
+Rest API server to implement the following services:
+* Get TV series
+* Get seasons
+* Get Episodes
+This API consumes the The Movie Database API
+
 ### HydraWebInterfaceGo
-### HydraWebInterfaceReactJS
+
+### Web interface react
+located: services/WebInterfaceReact
+After the Installation this service is available under the Port: 3001
+Web interface that allows to query and select a tv serie, seasons and
+episodes.
+
 
 ## Installation
 ### Requirements
@@ -41,7 +72,6 @@ docker-compose build
 ```
 docker-compose up
 ```
-
 
 ### Logs
 ## License

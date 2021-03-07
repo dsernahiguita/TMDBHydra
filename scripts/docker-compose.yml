@@ -13,6 +13,22 @@ services:
     networks:
       - tmdbhydra-network
 
+  web-interface-react:
+    build:
+          context: ../services/WebInterfaceReact
+          dockerfile: Dockerfile
+    container_name: web-interface-react
+    command: react-scripts start
+    stdin_open: true
+    tty: true
+    expose:
+      - "3001"
+    ports:
+      - "3001:3001"
+    #depends_on:
+    networks:
+      - tmdbhydra-network
+
 networks:
   tmdbhydra-network:
     driver: bridge
