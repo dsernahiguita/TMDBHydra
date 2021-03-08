@@ -1,5 +1,5 @@
 # Backend for frontend service
-Rest API server to implement the following services:
+Rest API that implements the following services:
 * Get TV series
 * Get seasons
 * Get Episodes

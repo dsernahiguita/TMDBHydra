@@ -16,44 +16,43 @@ In the end the user gets displayed a title and a summary of the chosen episode.#
 * Please provide us the source code as a public accessible git repo (github, gitlab,...)
 
 ## Architecture
+The system is composed of three components:
 
--------------------------------------
-|                                    |
-|       WEB Interface React          |
-|                                    |  
--------------------------------------
-
---------------------------------------
-|                                    |
-|      BackedForFrontend Api         |
-|                                    |   
---------------------------------------
-
--------------------------------------
-|                                    |
-|               TMDB Api             |
-|                                    |  
--------------------------------------
-
-
-## Services
-### Backed for frontend:
-located: services/BackedForFrontend
-After the Installation this service is available under the Port: 4060
-Rest API server to implement the following services:
+### BackedForFrontend
+Rest API that implements the following services:
 * Get TV series
 * Get seasons
 * Get Episodes
 This API consumes the The Movie Database API
+located: services/BackedForFrontend
+After the Installation this service is available under the Port: 4060
 
-### HydraWebInterfaceGo
-
-### Web interface react
+### WebInterfaceReact
+Web application that allows the user in a graphical interface to searches series using free text, select seasons and episodes.
 located: services/WebInterfaceReact
 After the Installation this service is available under the Port: 3001
-Web interface that allows to query and select a tv serie, seasons and
-episodes.
 
+### CliGo
+Command line tool to simulate user ui interaction and data flow
+located: services/CliGo
+
+-------------------------------------    -------------------------------------
+|                                    |   |                                   |
+|       WEB Interface React          |   |    Cli Go (Commander line tool)   |  
+|                                    |   |                                   |
+-------------------------------------    -------------------------------------
+
+----------------------------------------------------------------------------
+|                                                                          |
+|                          BackedForFrontend Api(Port 4060)                |
+|                                                                          |   
+----------------------------------------------------------------------------
+
+----------------------------------------------------------------------------
+|                                                                          |
+|                                   TMDB Api                               |
+|                                                                          |  
+----------------------------------------------------------------------------
 
 ## Installation
 ### Requirements
