@@ -36,6 +36,7 @@ After the Installation this service is available under the Port: 3001
 Command line tool to simulate user ui interaction and data flow
 located: services/CliGo
 
+```
 -------------------------------------    -------------------------------------
 |                                    |   |                                   |
 |       WEB Interface React          |   |    Cli Go (Commander line tool)   |  
@@ -53,6 +54,7 @@ located: services/CliGo
 |                                   TMDB Api                               |
 |                                                                          |  
 ----------------------------------------------------------------------------
+```
 
 ## Installation
 ### Requirements
