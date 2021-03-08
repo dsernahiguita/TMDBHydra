@@ -10,27 +10,19 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	Errors "github.com/TMDBHydra/BackedForFrontend/pkg/errors"
+	Errors "github.com/TMDBHydra/CliGo/pkg/errors"
 )
 
 type Config struct {
-	LogErrors          bool   `json:"logErrors"`
-	PortRestAPI        string `json:"portRestAPI"`
-	BackendServiceTMDB string `json:"backendServiceTMDB"`
-	ApiKeyTMDB         string `json:"apiKeyTMDB"`
+	LogErrors        bool   `json:"logErrors"`
+	BackendTMDBHydra string `json:"backendTMDBHydra"`
 }
 
 /* Log errors: the errors will be save into the path logs */
 var LogErrors bool
 
-/* Port rest api: port where services can be accessed */
-var PortRestAPI string
-
 /* End point backend service The movie DB */
-var BackendServiceTMDB string
-
-/* End point backend service The movie DB */
-var ApiKeyTMDB string
+var BackendTMDBHydra string
 
 /**
 * Read config file
@@ -51,7 +43,5 @@ func ReadConfigFile(configFile string) {
 		Errors.Fatal.HandlingErrors(err, true, Errors.ErrorConfigFileUnreadable)
 	}
 	LogErrors = config.LogErrors
-	PortRestAPI = config.PortRestAPI
-	BackendServiceTMDB = config.BackendServiceTMDB
-	ApiKeyTMDB = config.ApiKeyTMDB
+	BackendTMDBHydra = config.BackendTMDBHydra
 }

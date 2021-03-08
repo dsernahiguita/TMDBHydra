@@ -6,16 +6,11 @@
 package errors
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
-
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type ErrorType uint
@@ -39,6 +34,11 @@ const (
 	ErrorGetTVSerie                     /* 5: Error by trying to get the tvseries */
 	ErrorGetSeasons                     /* 6: Error by trying to get the tvserie's seasons */
 	ErrorGetEpisodes                    /* 7: Error by trying to get the season's episodes */
+	ErrorEnterTVSerie                   /* 8: Error when the user is entering the tvSerie  */
+	ErrorGetNextPage                    /* 9: Error when the user is entering the next page */
+	ErrorSelectSerieId                  /* 10: Error when the user is entering the serie Id */
+	ErrorSelectSeasonId                 /* 11: Error when the user is entering the season Id  */
+	ErrorSelectEpisodeId                /* 12: Error when the use is entering the episode Id */
 )
 
 type LogRecord struct {
@@ -49,52 +49,11 @@ type LogRecord struct {
 	Timestamp  int64
 }
 
-const Service = "BackendForFrontend"
+const Service = "CliGo"
 
 type ErrorMessage struct {
 	ErrorId ErrorId
 	Message string
-}
-
-type Config struct {
-	DatabaseLogs           string `json:"databaseLogs"`
-	DatabaseLogsCollection string `json:"databaseLogsCollection"`
-	DatabaseHost           string `json:"databaseHost"`
-	DatabaseUser           string `json:"databaseUser"`
-	DatabasePassword       string `json:"databasePassword"`
-}
-
-var DatabaseLogs string
-var DatabaseLogsCollection string
-var DatabaseHost string
-var DatabaseUser string
-var DatabasePassword string
-
-/**
-* Load database credentials
-* @return bool
- */
-func LoadDatabaseCredentials() bool {
-	/* Read config file to get the credential of the logs database */
-	jsonFile, err := ioutil.ReadFile("config/config.json")
-	if err != nil {
-		return false
-	}
-	var config Config
-
-	/* we unmarshal our byteArray which contains our
-	jsonFile's content into 'config' which we defined above */
-	err = json.Unmarshal(jsonFile, &config)
-	if err != nil {
-		return false
-	}
-	DatabaseLogs = config.DatabaseLogs
-	DatabaseLogsCollection = config.DatabaseLogsCollection
-	DatabaseHost = config.DatabaseHost
-	DatabaseUser = config.DatabaseUser
-	DatabasePassword = config.DatabasePassword
-
-	return true
 }
 
 /**
@@ -180,54 +139,6 @@ func (errorType ErrorType) Log(error string, errorId ErrorId) bool {
 		return false
 	}
 	f.Close()
-	errorType.saveLogDB(error, errorId)
-
-	return true
-}
-
-/**
-* Save log DB
-* @param errorType ErrorType
-* @param string error
-* @param ErrorId errorId
-* @param bool
- */
-func (errorType ErrorType) saveLogDB(error string, errorId ErrorId) bool {
-	/* set client options */
-	mongoDBServerConnection := fmt.Sprintf(
-		"mongodb+srv://%v:%v@%v/?retryWrites=true&w=majority",
-		DatabaseUser,
-		DatabasePassword,
-		DatabaseHost,
-	)
-
-	clientOptions := options.Client().ApplyURI(mongoDBServerConnection)
-	/* Connect to MongoDB */
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-
-	/* Check the connection */
-	err = client.Ping(context.TODO(), nil)
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-	logCollection := client.Database(DatabaseLogs).Collection(DatabaseLogsCollection)
-	errorTypeName := errorType.getErrorTypeName()
-	var logRecord LogRecord
-	logRecord.Service = Service
-	logRecord.Error_Type = errorTypeName
-	logRecord.Error_Id = errorId
-	logRecord.Error = error
-	logRecord.Timestamp = time.Now().Unix()
-	_, err = logCollection.InsertOne(context.TODO(), logRecord)
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
 	return true
 }
 
@@ -255,6 +166,17 @@ func (errorId ErrorId) getErrorIdDescription() string {
 		return "Error by trying to get the tvserie's seasons"
 	case ErrorGetEpisodes:
 		return "Error by trying to get the season's episodes"
+	case ErrorEnterTVSerie:
+		return "Error when the user is entering the tvSerie"
+	case ErrorGetNextPage:
+		return "Error when the user is entering the next page"
+	case ErrorSelectSerieId:
+		return "Error when the user is entering the serie Id"
+	case ErrorSelectSeasonId:
+		return "Error when the user is entering the season Id"
+	case ErrorSelectEpisodeId:
+		return "Error when the use is entering the episode Id"
+
 	default:
 		return "NoId"
 	}

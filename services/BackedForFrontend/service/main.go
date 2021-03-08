@@ -1,3 +1,8 @@
+/**
+* Main
+* @author  Diana Lucia Serna Higuita
+ */
+
 package main
 
 import (

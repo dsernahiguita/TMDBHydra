@@ -1,28 +1,22 @@
+/**
+* Api
+* @author  Diana Lucia Serna Higuita
+ */
+
 package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 
 	Config "github.com/TMDBHydra/BackedForFrontend/pkg/config"
 	Errors "github.com/TMDBHydra/BackedForFrontend/pkg/errors"
 )
-
-type bodyGetTVSerie struct {
-	Title string
-}
-
-type bodyGetSeasonsEpisodes struct {
-	TVSerie string
-}
-
-type bodyGetSummaryEpisode struct {
-	Episode string
-}
 
 /**
 * Get
@@ -73,96 +67,128 @@ func delete(w http.ResponseWriter, r *http.Request) {
 }
 
 /**
-* Get tv serie
+* Get tv series
 *
 * @param http.ResponseWriter w
 * @param http.Request r
  */
-func getTVSerie(w http.ResponseWriter, r *http.Request) {
-	var p bodyGetTVSerie
-	/* Try to decode the request body into the struct. If there is an error,
-	respond to the client with the error message and a 400 status code.*/
-	err := json.NewDecoder(r.Body).Decode(&p)
-	if err != nil {
-		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorRequestBodyBadlyFormed, Config.LogErrors)
-		return
-	}
+func GetTVSeries(w http.ResponseWriter, r *http.Request) {
+	/* query and page*/
+	parameters := r.URL.Query()
+
 	/* if one of the parameters in empty we should return error message 400 */
-	if len(p.Title) == 0 {
+	if len(parameters.Get("query")) == 0 {
 		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
 		return
 	}
-	title := p.Title
+	query := parameters.Get("query")
 
+	/* if the parameter page is empty or not number we should use by default 1 */
+	page, err := strconv.Atoi(parameters.Get("page"))
+	if err != nil {
+		page = 1
+	}
+
+	results, err := TMDBGetTVSeries(query, page)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetTVSerie, Config.LogErrors)
+		return
+	}
+
+	/* send response {page, total_pages, total_results, results: [{id, name, origial_name, overview}]}*/
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	message := fmt.Sprintf("title %s", title)
-	w.Write([]byte(`{"message": "` + message + `", "title": "` + title + `"}`))
+	w.WriteHeader(http.StatusOK)
+	message, err := json.Marshal(results)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetTVSerie, Config.LogErrors)
+		return
+	}
+	w.Write([]byte(message))
 }
 
 /**
-* Get seasons episodes
+* Get seasons
 *
 * @param http.ResponseWriter w
 * @param http.Request r
  */
-func getSeasonsEpisodes(w http.ResponseWriter, r *http.Request) {
-	var p bodyGetSeasonsEpisodes
-	/* Try to decode the request body into the struct. If there is an error,
-	respond to the client with the error message and a 400 status code.*/
-	err := json.NewDecoder(r.Body).Decode(&p)
+func GetSeasons(w http.ResponseWriter, r *http.Request) {
+	/* tvSerieId */
+	parameters := r.URL.Query()
+
+	/* if the parameter tvSerieId is empty we should return an error */
+	tvSerieId, err := strconv.Atoi(parameters.Get("tvSerieId"))
 	if err != nil {
-		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorRequestBodyBadlyFormed, Config.LogErrors)
-		return
-	}
-	/* if one of the parameters in empty we should return error message 400 */
-	if len(p.TVSerie) == 0 {
 		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
 		return
 	}
-	tvSerie := p.TVSerie
 
+	results, err := TMDBGetSeasons(tvSerieId)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetSeasons, Config.LogErrors)
+		return
+	}
+
+	/* send response {name, number_of_seasons, number_of_episodes, seasons: [{id, name, overview, season_number}]}*/
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	message := fmt.Sprintf("TVSerie search: %s ", tvSerie)
-	w.Write([]byte(`{"message": "` + message + `", "tvSerie": "` + tvSerie + `"}`))
+	w.WriteHeader(http.StatusOK)
+	message, err := json.Marshal(results)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetSeasons, Config.LogErrors)
+		return
+	}
+	w.Write([]byte(message))
 }
 
 /**
-* Get summary episode
+* Get episodes
 *
 * @param http.ResponseWriter w
 * @param http.Request r
  */
-func getSummaryEpisode(w http.ResponseWriter, r *http.Request) {
-	var p bodyGetSummaryEpisode
-	/* Try to decode the request body into the struct. If there is an error,
-	respond to the client with the error message and a 400 status code.*/
-	err := json.NewDecoder(r.Body).Decode(&p)
+func GetEpisodes(w http.ResponseWriter, r *http.Request) {
+	/* tvSerieId and season */
+	parameters := r.URL.Query()
+
+	/* if the parameter tvSerieId is empty we should return an error */
+	tvSerieId, err := strconv.Atoi(parameters.Get("tvSerieId"))
 	if err != nil {
-		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorRequestBodyBadlyFormed, Config.LogErrors)
-		return
-	}
-	/* if one of the parameters in empty we should return error message 400 */
-	if len(p.Episode) == 0 {
 		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
 		return
 	}
-	episode := p.Episode
 
+	/* if the parameter season is empty we should return an error */
+	season, err := strconv.Atoi(parameters.Get("season"))
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, "", Errors.ErrorRequestParameterEmpty, Config.LogErrors)
+		return
+	}
+
+	results, err := TMDBGetEpisodes(tvSerieId, season)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetEpisodes, Config.LogErrors)
+		return
+	}
+
+	/* send response {id, name, overview, season_number, episodes: [{id, name, overview, episode_number}]} */
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	message := fmt.Sprintf("Episode %s ", episode)
-	w.Write([]byte(`{"message": "` + message + `", "episode": "` + episode + `"}`))
+	w.WriteHeader(http.StatusOK)
+	message, err := json.Marshal(results)
+	if err != nil {
+		Errors.HandlingErrorsHttpRequest(w, err.Error(), Errors.ErrorGetEpisodes, Config.LogErrors)
+		return
+	}
+	w.Write([]byte(message))
 }
 
 /**
 * API
 * Here are implemented a request router and dispatcher for matching incoming request
-* that includes the format /storeDataset
+* that includes the format /api/frontend
 * Handler implemented:
-* POST /storeDataset/rx store a RX file into IPFS
-* POST /storeDataset/ct store serveral CT files into IPFS
+* Get tvserie
+* Get seasons (of a tv serie)
+* Get episodes (of a season)
 * The port used by the rest API is defined into the config.json file
  */
 func Main() {
@@ -174,9 +200,25 @@ func Main() {
 	api.HandleFunc("", delete).Methods(http.MethodDelete)
 
 	/* Call service encrypt file */
-	api.HandleFunc("/tvserie", getTVSerie).Methods(http.MethodGet)
-	api.HandleFunc("/seasons", getSeasonsEpisodes).Methods(http.MethodGet)
-	api.HandleFunc("/episode", getSummaryEpisode).Methods(http.MethodGet)
+	api.HandleFunc("/tvserie", GetTVSeries).Methods(http.MethodGet)
+	api.HandleFunc("/seasons", GetSeasons).Methods(http.MethodGet)
+	api.HandleFunc("/episodes", GetEpisodes).Methods(http.MethodGet)
 
-	log.Fatal(http.ListenAndServe(":"+Config.PortRestAPI, r))
+	corsOpts := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, //you service is available and allowed for this base url
+		AllowedMethods: []string{
+			http.MethodGet, //http methods for your app
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+			http.MethodOptions,
+			http.MethodHead,
+		},
+		AllowedHeaders: []string{
+			"*",
+		},
+	})
+
+	log.Fatal(http.ListenAndServe(":"+Config.PortRestAPI, corsOpts.Handler(r)))
 }
