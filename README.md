@@ -24,16 +24,21 @@ Rest API that implements the following services:
 * Get seasons
 * Get Episodes
 This API consumes the The Movie Database API
+
 located: services/BackedForFrontend
+
 After the Installation this service is available under the Port: 4060
 
 ### WebInterfaceReact
 Web application that allows the user in a graphical interface to searches series using free text, select seasons and episodes.
+
 located: services/WebInterfaceReact
+
 After the Installation this service is available under the Port: 3001
 
 ### CliGo
 Command line tool to simulate user ui interaction and data flow
+
 located: services/CliGo
 
 ```
