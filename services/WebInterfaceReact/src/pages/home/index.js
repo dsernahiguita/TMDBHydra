@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Card, Typography, IconButton, Button, Input, TextField } from '@material-ui/core';
+import { Button, TextField, IconButton, CircularProgress } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import TVSeriesList from './tvSeriesList';
 import Seasons from './seasons';
@@ -24,6 +24,7 @@ export class Home extends Component {
     this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
     this.state = {
       tvSerie: '',
+      loading: false,
     }
   }
 
@@ -34,8 +35,11 @@ export class Home extends Component {
   async loadData() {
     try {
       const { tvSerie } = this.state;
+      this.setState({ loading: true });
       await this.props.getTVSeries(tvSerie);
+      this.setState({ loading: false });
     } catch (error) {
+      this.setState({ loading: false });
       console.error(error);
     }
   }
@@ -48,8 +52,11 @@ export class Home extends Component {
   async loadNextPage(page) {
     try {
       const { tvSerie } = this.state;
+      this.setState({ loading: true });
       await this.props.getTVSeries(tvSerie, page);
+      this.setState({ loading: false });
     } catch (error) {
+      this.setState({ loading: true });
       console.error(error);
     }
   }
@@ -61,8 +68,11 @@ export class Home extends Component {
   */
   async loadSeasons(tvSerieId) {
     try {
+      this.setState({ loading: true });
       await this.props.getSeasons(tvSerieId);
+      this.setState({ loading: false });
     } catch (error) {
+      this.setState({ loading: false });
       console.error(error);
     }
   }
@@ -75,8 +85,11 @@ export class Home extends Component {
   */
   async loadEpisodes(tvSerieId, season) {
     try {
+      this.setState({ loading: true });
       await this.props.getEpisodes(tvSerieId, season);
+      this.setState({ loading: false });
     } catch (error) {
+      this.setState({ loading: false });
       console.error(error);
     }
   }
@@ -93,10 +106,9 @@ export class Home extends Component {
     const {
       tvSeries,
       seasons,
-      nameTVSerie,
       episodes,
     } = this.props;
-    const { tvSerie } = this.state;
+    const { tvSerie, loading } = this.state;
     return (
       <div className="home-layout">
         <div className="title-layout">
@@ -128,6 +140,11 @@ export class Home extends Component {
             </IconButton>
           </div>
         </div>
+        {loading && (
+          <div className="loading">
+            <CircularProgress />
+          </div>
+        )}
         {episodes.length > 0 && (
           <Episodes
 
@@ -158,14 +175,12 @@ Home.propTypes = {
   seasons: PropTypes.arrayOf(Object),
   episodes: PropTypes.arrayOf(Object),
   page: PropTypes.number.isRequired,
-  nameTVSerie: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = state => ({
   tvSeries: state.tvSeries,
   seasons: state.seasons,
   page: state.page,
-  nameTVSerie: state.state,
   episodes: state.episodes
 });
 
