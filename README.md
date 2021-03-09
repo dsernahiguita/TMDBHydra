@@ -78,6 +78,9 @@ docker-compose build
 ```
 docker-compose up
 ```
+5. When the installation is finished, the BackendForFrontend will be available on port 4060 and the WebInterface on port 3000 or 3001.
+
+6. Please open your browser and type in the url localhost:3000
 
 ### Logs
 ## License
