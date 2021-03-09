@@ -170,4 +170,7 @@ The error codes 1 and 2 return the status code http.StatusBadRequest (400), all
 other errors return http.StatusInternalServerError (500)
 
 ### Logs
+Errors logs are stored in text files into the path logs/ where the application
+is installed and in a mongoDB database TMDBHydra collection logs.
+
 ## License

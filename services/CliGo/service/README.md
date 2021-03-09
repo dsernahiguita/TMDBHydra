@@ -68,6 +68,8 @@ are empty
 * Code 11: Error when the user is entering the season Id
 * Code 12: Error when the use is entering the episode Id
 
-
 ### Logs
+### Logs
+Errors logs are stored in text files into the path logs/ where the application
+is installed.
 ## License
