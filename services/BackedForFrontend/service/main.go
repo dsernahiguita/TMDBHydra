@@ -16,7 +16,6 @@ import (
 * Entry point to the application
  */
 func main() {
-	/* Read config file, this file contains information such local storages */
 	/* the config file is located in the same folder where the application
 	is runnig config/config.json */
 	Config.ReadConfigFile("config/config.json")
