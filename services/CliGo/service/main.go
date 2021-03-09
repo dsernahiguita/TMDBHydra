@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -22,27 +23,51 @@ func welcome() {
 }
 
 /**
+* End
+ */
+func end() {
+	fmt.Println("----------------------------------")
+	fmt.Println("|  Thanks for using our services  |")
+	fmt.Println("-----------------------------------")
+}
+
+/**
+* Read string
+* @param ioReader
+* @return string value
+* @return error err
+ */
+func readString(stdin io.Reader) (string, error) {
+	reader := bufio.NewReader(stdin)
+	value, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	/* convert CRLF to LF */
+	value = strings.Replace(value, "\n", "", -1)
+	return value, nil
+}
+
+/**
 * Ask tv serie
 * ask the user to enter a tv series. It will prompt until the user has
 * entered a non-empty value
 * @return string tvSerieSearch
  */
 func askTvSerie() string {
-	reader := bufio.NewReader(os.Stdin)
-	exit := false
 	var tvSerieSearch string
-	for exit == false {
+	for {
 		fmt.Print("-> Please enter a tv serie: ")
-		tvSerie, err := reader.ReadString('\n')
+		tvSerie, err := readString(os.Stdin)
 		if err != nil {
 			Errors.Error.HandlingErrors(err, true, Errors.ErrorEnterTVSerie)
+		} else {
+			if len(tvSerie) != 0 {
+				tvSerieSearch = tvSerie
+				break
+			}
 		}
-		/* convert CRLF to LF */
-		tvSerie = strings.Replace(tvSerie, "\n", "", -1)
-		if len(tvSerie) != 0 {
-			tvSerieSearch = tvSerie
-			exit = true
-		}
+
 	}
 	return tvSerieSearch
 }
@@ -81,20 +106,19 @@ func searchAndDisplayTVSeries(tvSerie string, page int) Api.TVSeries {
 * Ask page and display results
 * @param string tvSerie
 * @param int totalPages
+* @param Api.TVSeries results
+* @return Api.TVSeries results
  */
 func askPageAndDisplayResults(tvSerie string, totalPages int, results Api.TVSeries) Api.TVSeries {
-	exit := false
-	for exit == false {
+	for {
 		page := 1
-		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("-> If you want to see more results, please type the page number, otherwise press enter: " + string(page))
-		nextPage, err := reader.ReadString('\n')
+		nextPage, err := readString(os.Stdin)
 		if err != nil {
 			Errors.Error.HandlingErrors(err, true, Errors.ErrorGetNextPage)
 		} else {
-			nextPage = strings.Replace(nextPage, "\n", "", -1)
 			if len(nextPage) == 0 {
-				exit = true
+				break
 			} else {
 				page, err = strconv.Atoi(nextPage)
 				if err != nil {
@@ -115,27 +139,24 @@ func askPageAndDisplayResults(tvSerie string, totalPages int, results Api.TVSeri
 /**
 * Select tv serie
 * @param Api.TVSeries results
+* @param io.Reader stdin
 * @return int tvSerieId
  */
-func selectTvSerie(results Api.TVSeries) int {
-	reader := bufio.NewReader(os.Stdin)
-	exit := false
+func selectTvSerie(results Api.TVSeries, stdin io.Reader) int {
 	var tvSerieIdSearch int
-	for exit == false {
+	for {
 		fmt.Print("-> Please enter the SERIE ID you wants to see: ")
-		tvSerieId, err := reader.ReadString('\n')
+		tvSerieId, err := readString(stdin)
 		if err != nil {
 			Errors.Error.HandlingErrors(err, true, Errors.ErrorSelectSerieId)
 		}
-		/* convert CRLF to LF */
-		tvSerieId = strings.Replace(tvSerieId, "\n", "", -1)
 		if len(tvSerieId) != 0 {
 			tvSerieIdSearch, err = strconv.Atoi(tvSerieId)
 			if err != nil {
 				fmt.Println("****** Please enters valid serie Id ")
 			}
 			if tvSerieIdSearch > 0 {
-				exit = true
+				break
 			}
 		}
 	}
@@ -172,37 +193,46 @@ func displaySeasons(tvSerieId int) Api.TVSerieSeasons {
 }
 
 /**
+* Find season
+* search if the seasonId are in the seasons array
+* @param Api.TVSerieSeasons tvSerieSeasons
+* @param int seasonIdSearch
+* @return bool
+ */
+func findSeason(tvSerieSeasons Api.TVSerieSeasons, seasonIdSearch int) bool {
+	foundSeasonId := false
+	for i := range tvSerieSeasons.Seasons {
+		if tvSerieSeasons.Seasons[i].SeasonNumber == seasonIdSearch {
+			foundSeasonId = true
+		}
+	}
+	return foundSeasonId
+}
+
+/**
 * Select season
 * @param int totalSeasons
 * @param Api.TVSerieSeasons tvSerieSeasons
+* @param o.Reader stdin
 * @return int seasonId
  */
-func selectSeason(totalSeasons int, tvSerieSeasons Api.TVSerieSeasons) int {
-	reader := bufio.NewReader(os.Stdin)
-	exit := false
+func selectSeason(totalSeasons int, tvSerieSeasons Api.TVSerieSeasons, stdin io.Reader) int {
 	var seasonIdSearch int
-	for exit == false {
+	for {
 		fmt.Print("-> Please enter the SEASON ID you wants to see: ")
-		seasonId, err := reader.ReadString('\n')
+		seasonId, err := readString(stdin)
 		if err != nil {
 			Errors.Error.HandlingErrors(err, true, Errors.ErrorSelectSeasonId)
 		}
-		/* convert CRLF to LF */
-		seasonId = strings.Replace(seasonId, "\n", "", -1)
 		if len(seasonId) != 0 {
 			seasonIdSearch, err = strconv.Atoi(seasonId)
 			if err != nil {
-				fmt.Println("****** Please enters valid serie Id ")
-			}
-			/* search if the seasonId are int the seasons array */
-			foundSeasonId := false
-			for i := range tvSerieSeasons.Seasons {
-				if tvSerieSeasons.Seasons[i].SeasonNumber == seasonIdSearch {
-					foundSeasonId = true
+				fmt.Println("****** Please enters valid season Id ")
+			} else {
+				/* search if the seasonId are in the seasons array */
+				if findSeason(tvSerieSeasons, seasonIdSearch) == true {
+					break
 				}
-			}
-			if foundSeasonId == true {
-				exit = true
 			}
 		}
 	}
@@ -242,26 +272,25 @@ func displayEpisodes(tvSerieId int, season int, tvSerieSeasons Api.TVSerieSeason
 
 /**
 * Select episode
+* @param Api.EpisodesSeason episodes
+* @param o.Reader stdin
+* @return int episodeIdSearch
  */
-func selectEpisode(episodes Api.EpisodesSeason) int {
-	reader := bufio.NewReader(os.Stdin)
-	exit := false
+func selectEpisode(episodes Api.EpisodesSeason, stdin io.Reader) int {
 	var episodeIdSearch int
-	for exit == false {
+	for {
 		fmt.Print("-> Please enter the EPISODE ID you wants to see: ")
-		episodeId, err := reader.ReadString('\n')
+		episodeId, err := readString(stdin)
 		if err != nil {
 			Errors.Error.HandlingErrors(err, true, Errors.ErrorSelectEpisodeId)
 		}
-		/* convert CRLF to LF */
-		episodeId = strings.Replace(episodeId, "\n", "", -1)
 		if len(episodeId) != 0 {
 			episodeIdSearch, err = strconv.Atoi(episodeId)
 			if err != nil {
 				fmt.Println("****** Please enters valid episode Id ")
 			}
-			if episodeIdSearch > 0 {
-				exit = true
+			if episodeIdSearch > 0 && episodeIdSearch <= len(episodes.Episodes) {
+				break
 			}
 		}
 	}
@@ -287,18 +316,26 @@ func displayEpisode(episodes Api.EpisodesSeason, episodeId int, tvSerieSeasons A
 }
 
 func main() {
-	/* Read config file, this file contains information such local storages */
 	/* the config file is located in the same folder where the application
 	is runnig config/config.json */
 	Config.ReadConfigFile("config/config.json")
 	var results Api.TVSeries
+	var tvSerieSearch string
 	welcome()
 
-	/* 1. Ask for the tv serie */
-	tvSerieSearch := askTvSerie()
+	for {
+		/* 1. Ask for the tv serie */
+		tvSerieSearch = askTvSerie()
 
-	/* 2. Display the first page with the results */
-	results = searchAndDisplayTVSeries(tvSerieSearch, 1)
+		/* 2. Display the first page with the results */
+		results = searchAndDisplayTVSeries(tvSerieSearch, 1)
+		if len(results.Results) > 0 {
+			break
+		} else {
+			fmt.Println("****** The search has no results")
+		}
+	}
+
 	totalPages := results.TotalPages
 
 	/* 3. If the results has severals pages, ask the user if he wants to see
@@ -308,21 +345,24 @@ func main() {
 	}
 
 	/* 4. Ask the user to select a tvserie entering the SERIE ID */
-	tvSerieId := selectTvSerie(results)
+	tvSerieId := selectTvSerie(results, os.Stdin)
 
 	/* 5. Display the seasons of the selected tvserie */
 	tvSerieSeasons := displaySeasons(tvSerieId)
 	totalSeasons := tvSerieSeasons.NumberOfSeasons
 
 	/* 6. Select season */
-	seasonId := selectSeason(totalSeasons, tvSerieSeasons)
+	seasonId := selectSeason(totalSeasons, tvSerieSeasons, os.Stdin)
 
 	/* 7. Display the episodes of the selected seasonId */
 	episodes := displayEpisodes(tvSerieId, seasonId, tvSerieSeasons)
 
 	/* 8. Select episode */
-	episodeId := selectEpisode(episodes)
+	episodeId := selectEpisode(episodes, os.Stdin)
 
 	/* 9. Display episode */
 	displayEpisode(episodes, episodeId, tvSerieSeasons)
+
+	/* 10. End */
+	end()
 }

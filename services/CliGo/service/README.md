@@ -11,7 +11,7 @@ Steps:
 8. The list of episodes of the season are shown.
 9. The use is asked to pick a episode from the result list.
 10. In the end the user gets displayed a title and a summary of the chosen episode..
-This service consumes the service BackedForFrontend 
+This service consumes the service BackedForFrontend
 
 ## Installation
 ### Requirements
@@ -19,7 +19,7 @@ This service consumes the service BackedForFrontend
 * Config file "config.json": this file must be located in the same folder where
 the application was installed, path: config/config.json.
 This file allow to set the following options
-  * logErrors boolean: the logs will be stored in the mongo DB and in txt files
+  * logErrors boolean: the logs will be stored in txt files
   located into the path logs/
   * backendTMDBHydra: backend service
 

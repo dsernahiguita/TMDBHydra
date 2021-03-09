@@ -3,6 +3,7 @@ Rest API that implements the following services:
 * Get TV series
 * Get seasons
 * Get Episodes
+
 This API consumes the The Movie Database API
 
 ## Installation

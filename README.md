@@ -34,7 +34,7 @@ Web application that allows the user in a graphical interface to searches series
 
 located: services/WebInterfaceReact
 
-After the Installation this service is available under the Port: 3001
+After the Installation this service is available under the Port: 3000
 
 ### CliGo
 Command line tool to simulate user ui interaction and data flow
